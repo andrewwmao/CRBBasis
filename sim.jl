@@ -9,7 +9,7 @@ using Random
 using MRIgeneralizedBloch
 using ProgressBars
 
-## parameters
+## User-Defined Parameters
 Nfp = 2^11 #2048
 TR = 3.5e-3
 
@@ -20,23 +20,23 @@ B1max = 1.3
 TRF_max = 500e-6
 idx_grad = [2,3,4,5,6,7] # which gradients should be orthogonalized
 
-## load control, basis files
-control = matread("3T_v10p9_pattern.mat")
+## Load Flip Angle Pattern
+control = matread("FA_pattern.mat")
 α = [reshape(control["alpha"],:,6)[:,i] for i = 1:size(reshape(control["alpha"],:,6),2)]
 TRF = [reshape(control["TRF"],:,6)[:,i] for i = 1:size(reshape(control["TRF"],:,6),2)]
 
 R2slT = precompute_R2sl(T2s_min=T2smin, T2s_max=T2smax, B1_max=B1max,TRF_max=TRF_max)
-grad_list = [grad_m0s(), grad_R1f(), grad_R2f(), grad_Rx(), grad_R1s(), grad_T2s(), grad_ω0(), grad_B1()]
+grad_list = [grad_m0s(), grad_R1f(), grad_R2f(), grad_Rx(), grad_R1s(), grad_T2s(), grad_ω0(), grad_B1()] # signal derivatives to compute
 
 ijob = try
-    parse(Int32, ENV["SLURM_ARRAY_TASK_ID"]) # for a job submitted to a cluster managed by SLURM
+    parse(Int32, ENV["SLURM_ARRAY_TASK_ID"]) # for a job submitted to a cluster managed by Slurm
 catch
     1
 end
 rng = MersenneTwister(ijob);
 println("ijob = $ijob")
 
-##
+## Helper Function Definitions
 function set_rand_parameters(rng, T2smin, T2smax, B1min, B1max) # brain parenchyma
     m0s = Inf
     while (m0s < 0 || m0s > 0.35)
@@ -153,7 +153,7 @@ function calc_training_data(Nfp, α, TRF, TR, grad_list, R2slT, rng, T2smin, T2s
     return (s,p)
 end
 
-## training data
+## Caclulate Dictionary Fingerprints and Derivatives
 @info "Simulating fingerprints"
 flush(stderr)
 @time s, p = calc_training_data(Nfp, α, TRF, TR, grad_list, R2slT, rng, T2smin, T2smax, B1min, B1max, ijob)
@@ -163,7 +163,7 @@ write(file, "s", s)
 write(file, "p", p)
 close(file)
 
-## compute orthogonalized derivatives
+## Compute Orthogonalized Derivatives
 @info "Calculating orthogonalized derivatives"
 flush(stderr)
 

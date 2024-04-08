@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -p cpu_short,cpu_medium,cpu_long
+#SBATCH --partition cpu_short,cpu_medium,cpu_long
 #SBATCH --mem=100G
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
@@ -9,11 +9,13 @@
 #SBATCH --job-name=CalcBasis
 #SBATCH --mail-type=FAIL
 
+export JULIA_BIN=/gpfs/scratch/asslaj01/julia-1.10.0/bin/julia
+
 set -Eeo pipefail
 
 echo $HOSTNAME
 echo $SLURM_ARRAY_TASK_ID
-/gpfs/scratch/am4827/julia-1.10.0/bin/julia --threads=$SLURM_CPUS_PER_TASK --heap-size-hint=${SLURM_MEM_PER_NODE}M basis.jl
+$JULIA_BIN --threads=$SLURM_CPUS_PER_TASK --heap-size-hint=${SLURM_MEM_PER_NODE}M basis.jl
 
 rm -f fingerprints/*.mat
 rm -f fingerprints_ograd/*.mat

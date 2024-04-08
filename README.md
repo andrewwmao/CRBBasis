@@ -1,10 +1,10 @@
 # Cramer-Rao Bound Optimized Subspace Reconstruction in Quantitative MRI
 
-This repository shows how to optimize the CRB-SVD bases described in https://arxiv.org/abs/2305.00326.
+This repository shows how to optimize CRB-SVD bases as described in the paper https://arxiv.org/abs/2305.00326. These bases are useful for subspace reconstruction tasks performed as an intermediate step before parameter estimation in quantitative MRI.
 
-In sim.jl, a dictionary is computed using the [MRIgeneralizedBloch.jl](https://github.com/JakobAsslaender/MRIgeneralizedBloch.jl) package. For each fingerprint, the signal derivatives are then orthogonalized with respect to one another using QR factorization.
+In ```sim.jl```, a dictionary is computed using the [MRIgeneralizedBloch.jl](https://github.com/JakobAsslaender/MRIgeneralizedBloch.jl) package. For each fingerprint, the signal derivatives are then orthogonalized with respect to one another using QR factorization.
 
-In basis.jl, the signals and orthogonalized derivatives are loaded into a large matrix, on which the SVD is performed.
+In ```basis.jl```, the signals and orthogonalized derivatives are loaded into a large matrix on which the SVD is performed.
 
 Both scripts are provided with example bash scripts that can be used to submit the jobs to a computational cluster, in this case managed by Slurm.
 

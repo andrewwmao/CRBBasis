@@ -1,6 +1,3 @@
-##Optional: don't include orthogonalized derivatives for fat or CSF if not desired
-##Optional: conjugate random half of samples instead of doubling the sample size
-
 using Pkg
 Pkg.activate(".")
 Pkg.instantiate()
@@ -9,7 +6,7 @@ using MAT
 using Printf
 
 println("Threads=$(Threads.nthreads())"); flush(stdout)
-ijob = parse(Int32, ENV["SLURM_ARRAY_TASK_ID"])
+ijob = parse(Int32, ENV["SLURM_ARRAY_TASK_ID"]) # for a job submitted to a cluster managed by Slurm
 λ = ijob / 10 # assumes ijob goes from 0-10
 println("lambda=$(λ)"); flush(stdout);
 
@@ -18,7 +15,7 @@ Nfiles = [16, 2, 2]
 
 println(string("Basis: ", data_path)); flush(stdout)
 
-# check all files are present
+## Checks if all files are present
 iFile = [1:Nfiles[1]; 31:30+Nfiles[2]; 41:40+Nfiles[3]]
 fileavailable = trues(sum(Nfiles))
 for i in iFile
@@ -30,7 +27,7 @@ for i in iFile
 end
 idx = iFile[findall(x->x==true,fileavailable)]
 
-# load data
+## Load Data
 @info "Loading fingerprints"
 flush(stderr)
 
@@ -39,7 +36,7 @@ s = zeros(ComplexF32, size(s_temp, 1), size(s_temp,2), size(s_temp,3), sum(Int.(
 @time for i in eachindex(idx)
     data_file = string(data_path, "ijob", idx[i], ".mat")
     file = matopen(data_file)
-    s[:,:,:,i,1] .= read(file, "s") #using straight matread here seems to cause errors
+    s[:,:,:,i,1] .= read(file, "s")
     close(file)
 
     # multiply λ
@@ -58,7 +55,7 @@ elseif λ == 1
 end
 s = reshape(s, size(s_temp,1), :) #reshape before svd
 
-# calculate CRB-SVD
+## Calculate CRB-SVD
 BLAS.set_num_threads(Threads.nthreads())
 @info "Starting SVD"
 flush(stderr)
@@ -66,6 +63,7 @@ t = @elapsed U, S, _ = svd!(s)
 flush(stdout)
 GC.gc()
 
+## Save Results
 @info "Saving svd to file"
 flush(stderr)
 
