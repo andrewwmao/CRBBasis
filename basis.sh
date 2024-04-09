@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --partition cpu_short,cpu_medium,cpu_long
-#SBATCH --mem=100G
+#SBATCH --mem=80G
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=20

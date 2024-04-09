@@ -16,8 +16,8 @@ set -Eeo pipefail
 echo $HOSTNAME
 echo $SLURM_ARRAY_TASK_ID
 
-mkdir fingerprints
-mkdir fingerprints_ograd
+mkdir -p fingerprints
+mkdir -p fingerprints_ograd
 $JULIA_BIN --heap-size-hint=${SLURM_MEM_PER_NODE}M sim.jl
 
 wait

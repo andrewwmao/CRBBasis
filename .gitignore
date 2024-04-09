@@ -1,0 +1,4 @@
+slurm-*.out
+basis_*.mat
+fingerprints/*.mat
+fingerprints_ograd/*.mat
