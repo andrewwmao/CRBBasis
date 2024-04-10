@@ -1,4 +1,6 @@
-## Note: Code at the end of the script is used to compute orthogonalized derivatives
+## Note: To generate the dictionary, this script is inherently intended to be run multiple times
+## Sim.sh runs this script as an array, where each instance gets an environment variable called SLURM_ARRAY_TASK_ID
+## The code at the end of the script is used to compute the orthogonalized derivatives
 
 using Pkg
 Pkg.activate(".")
